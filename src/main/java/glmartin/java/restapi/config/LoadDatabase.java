@@ -12,6 +12,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * This class can be used to load data into the Database.
+ *
+ * Technically, we could have done it using the DB Migrations (https://github.com/glmartin/msa-example-db-mgmt)
+ * but I think this is a nice simple example of a Spring configuration bean. SO I decided to keep it in,
+ * and allow it to be controlled using a property value.
+ */
 @Configuration
 public class LoadDatabase {
 
