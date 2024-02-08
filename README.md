@@ -1,8 +1,8 @@
-# Microservice Arcitecture (MSA) REST API
+# Microservice Architecture (MSA) REST API
 
 REST API for Organization and Application User tracking.
 
-# Simple Build
+## Simple Build
 
 From the `restapi` directory:
 

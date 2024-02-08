@@ -28,7 +28,6 @@ dependencies {
 	// Hypermedia as the Engine of Application State
 	implementation 'org.springframework.boot:spring-boot-starter-hateoas'
 
-	//runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'org.postgresql:postgresql'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
