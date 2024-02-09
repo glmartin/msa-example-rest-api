@@ -68,10 +68,10 @@ public class OrganizationController {
     }
 
     @PostMapping("/organizations")
-    ResponseEntity<EntityModel<Organization>> create(@RequestBody Organization order) {
+    ResponseEntity<EntityModel<Organization>> create(@RequestBody Organization organization) {
 
-        order.setStatus(Status.PENDING);
-        Organization newOrganization = orgRepository.save(order);
+        organization.setStatus(Status.PENDING);
+        Organization newOrganization = orgRepository.save(organization);
 
         return ResponseEntity
                 .created(linkTo(methodOn(OrganizationController.class).get(newOrganization.getId())).toUri())
@@ -85,7 +85,7 @@ public class OrganizationController {
                 .orElseThrow(() -> new ResourceNotFoundException("/organizations/" + id + "/deactivate"));
 
         if (order.getStatus() == Status.ACTIVE) {
-            order.setStatus(Status.DEFUNCT);
+            order.setStatus(Status.INACTIVE);
             return ResponseEntity.ok(assembler.toModel(orgRepository.save(order)));
         }
 
@@ -94,7 +94,7 @@ public class OrganizationController {
                 .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
                 .body(Problem.create()
                         .withTitle("Method not allowed")
-                        .withDetail("You can't deactivate an order that is in the " + order.getStatus() + " status"));
+                        .withDetail("You can't deactivate an organization that is in the " + order.getStatus() + " status"));
     }
 
     @PutMapping("/organizations/{id}/activate")
@@ -113,6 +113,6 @@ public class OrganizationController {
                 .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
                 .body(Problem.create()
                         .withTitle("Method not allowed")
-                        .withDetail("You can't complete an order that is in the " + order.getStatus() + " status"));
+                        .withDetail("You can't activate an organization that is in the " + order.getStatus() + " status"));
     }
 }

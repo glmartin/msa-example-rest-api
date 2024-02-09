@@ -1,6 +1,7 @@
 package glmartin.java.restapi.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -11,6 +12,7 @@ import java.util.Objects;
 public class Organization {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
 
     @Column(nullable=false)
@@ -24,6 +26,10 @@ public class Organization {
     private List<AppUser> appUsers;
 
     public Organization() {}
+
+    public Organization(String name) {
+        this.name = name;
+    }
 
     public Organization(String name, Status status) {
         this.name = name;
