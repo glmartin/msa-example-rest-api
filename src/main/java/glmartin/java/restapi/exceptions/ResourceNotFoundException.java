@@ -1,4 +1,4 @@
-package glmartin.java.restapi.controllers.exceptions;
+package glmartin.java.restapi.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
 

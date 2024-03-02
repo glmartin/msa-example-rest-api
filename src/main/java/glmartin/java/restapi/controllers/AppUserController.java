@@ -3,25 +3,20 @@ package glmartin.java.restapi.controllers;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import glmartin.java.restapi.controllers.exceptions.ResourceNotFoundException;
+import glmartin.java.restapi.exceptions.ResourceNotFoundException;
 import glmartin.java.restapi.entities.AppUser;
 import glmartin.java.restapi.repositories.AppUserRepository;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@RequestMapping("/app_users")
 public class AppUserController {
 
     private final AppUserRepository repository;
@@ -32,7 +27,7 @@ public class AppUserController {
         this.assembler = assembler;
     }
 
-    @GetMapping("/app_users")
+    @GetMapping
     CollectionModel<EntityModel<AppUser>> getAll() {
 
         // With hyperlinks that includes a URI and a rel property
@@ -46,7 +41,7 @@ public class AppUserController {
                         .withSelfRel());
     }
 
-    @PostMapping("/app_users")
+    @PostMapping
     ResponseEntity<?> create(@RequestBody AppUser newAppUser) {
         EntityModel<AppUser> entityModel = assembler.toModel(repository.save(newAppUser));
 
@@ -56,7 +51,7 @@ public class AppUserController {
                 .body(entityModel);
     }
 
-    @GetMapping("/app_users/{id}")
+    @GetMapping("/{id}")
     EntityModel<AppUser> get(@PathVariable Long id) {
 
         AppUser appUser = repository.findById(id)
@@ -66,7 +61,7 @@ public class AppUserController {
         return assembler.toModel(appUser);
     }
 
-    @PutMapping("/app_users/{id}")
+    @PutMapping("/{id}")
     ResponseEntity<?> update(@RequestBody AppUser newAppUser, @PathVariable Long id) {
 
         AppUser updatedAppUser = repository.findById(id)
@@ -88,7 +83,7 @@ public class AppUserController {
                 .body(entityModel);
     }
 
-    @DeleteMapping("/app_users/{id}")
+    @DeleteMapping("/{id}")
     ResponseEntity<?> delete(@PathVariable Long id) {
         repository.deleteById(id);
         return ResponseEntity.noContent().build();

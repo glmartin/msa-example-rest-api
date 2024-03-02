@@ -1,7 +1,6 @@
 package glmartin.java.restapi.controllers;
 
-import glmartin.java.restapi.controllers.exceptions.ControllerErrorResponse;
-import glmartin.java.restapi.controllers.exceptions.ResourceNotFoundException;
+import glmartin.java.restapi.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

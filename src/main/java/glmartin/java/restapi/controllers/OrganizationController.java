@@ -1,10 +1,9 @@
 package glmartin.java.restapi.controllers;
 
-import glmartin.java.restapi.controllers.exceptions.ResourceNotFoundException;
 import glmartin.java.restapi.entities.AppUser;
 import glmartin.java.restapi.entities.Status;
 import glmartin.java.restapi.entities.Organization;
-import glmartin.java.restapi.repositories.OrganizationRepository;
+import glmartin.java.restapi.services.OrganizationService;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
@@ -21,22 +20,23 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@RequestMapping("/organizations")
 public class OrganizationController {
 
-    private final OrganizationRepository orgRepository;
+    private final OrganizationService orgService;
     private final OrganizationModelAssembler assembler;
     private final AppUserModelAssembler appUserAssembler;
 
-    public OrganizationController(OrganizationRepository orgRepository, OrganizationModelAssembler assembler, AppUserModelAssembler appUserAssembler) {
-        this.orgRepository = orgRepository;
+    public OrganizationController(OrganizationService orgService, OrganizationModelAssembler assembler, AppUserModelAssembler appUserAssembler) {
+        this.orgService = orgService;
         this.assembler = assembler;
         this.appUserAssembler = appUserAssembler;
     }
 
-    @GetMapping("/organizations")
+    @GetMapping
     CollectionModel<EntityModel<Organization>> getAll() {
 
-        List<EntityModel<Organization>> organizations = orgRepository.findAll().stream()
+        List<EntityModel<Organization>> organizations = orgService.getOrganizations().stream()
                 .map(assembler::toModel)
                 .collect(Collectors.toList());
 
@@ -44,22 +44,14 @@ public class OrganizationController {
                 linkTo(methodOn(OrganizationController.class).getAll()).withSelfRel());
     }
 
-    @GetMapping("/organizations/{id}")
+    @GetMapping("/{id}")
     EntityModel<Organization> get(@PathVariable Long id) {
-
-        Organization order = orgRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("/organizations/" + id));
-
-        return assembler.toModel(order);
+        return assembler.toModel(orgService.getOrganization(id));
     }
 
-    @GetMapping("/organizations/{id}/app_users")
+    @GetMapping("/{id}/app_users")
     CollectionModel<EntityModel<AppUser>> getOrgUsers(@PathVariable Long id) {
-
-        Organization org = orgRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("/organizations/" + id + "/app_users"));
-
-        List<EntityModel<AppUser>> networkUsers = org.getAppUsers().stream()
+        List<EntityModel<AppUser>> networkUsers = orgService.getOrgUsers(id).stream()
                 .map(appUserAssembler::toModel)
                 .collect(Collectors.toList());
 
@@ -67,26 +59,30 @@ public class OrganizationController {
                 linkTo(methodOn(AppUserController.class).getAll()).withSelfRel());
     }
 
-    @PostMapping("/organizations")
+    @PostMapping
     ResponseEntity<EntityModel<Organization>> create(@RequestBody Organization organization) {
-
-        organization.setStatus(Status.PENDING);
-        Organization newOrganization = orgRepository.save(organization);
+        Organization newOrganization = orgService.createOrganization(organization);
 
         return ResponseEntity
                 .created(linkTo(methodOn(OrganizationController.class).get(newOrganization.getId())).toUri())
                 .body(assembler.toModel(newOrganization));
     }
 
-    @DeleteMapping("/organizations/{id}/deactivate")
+    @DeleteMapping("/{id}")
+    ResponseEntity.BodyBuilder delete(@PathVariable Long id) {
+        orgService.deleteOrganization(id);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/{id}/deactivate")
     ResponseEntity<?> deactivate(@PathVariable Long id) {
 
-        Organization order = orgRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("/organizations/" + id + "/deactivate"));
+        Organization organization = orgService.getOrganization(id);
 
-        if (order.getStatus() == Status.ACTIVE) {
-            order.setStatus(Status.INACTIVE);
-            return ResponseEntity.ok(assembler.toModel(orgRepository.save(order)));
+        if (organization.getStatus() == Status.ACTIVE) {
+            organization.setStatus(Status.INACTIVE);
+            return ResponseEntity.ok(assembler.toModel(orgService.updateOrganization(id, organization)));
         }
 
         return ResponseEntity
@@ -94,18 +90,17 @@ public class OrganizationController {
                 .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
                 .body(Problem.create()
                         .withTitle("Method not allowed")
-                        .withDetail("You can't deactivate an organization that is in the " + order.getStatus() + " status"));
+                        .withDetail("You can't deactivate an organization that is in the " + organization.getStatus() + " status"));
     }
 
-    @PutMapping("/organizations/{id}/activate")
+    @PutMapping("/{id}/activate")
     ResponseEntity<?> activate(@PathVariable Long id) {
 
-        Organization order = orgRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("/organizations/" + id + "/activate"));
+        Organization order = orgService.getOrganization(id);
 
         if (order.getStatus() == Status.PENDING) {
             order.setStatus(Status.ACTIVE);
-            return ResponseEntity.ok(assembler.toModel(orgRepository.save(order)));
+            return ResponseEntity.ok(assembler.toModel(orgService.updateOrganization(id, order)));
         }
 
         return ResponseEntity

@@ -1,0 +1,40 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+# Set up authorzation using JWTs
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+
+          # Used to validate the issuer of the tokens
+          issuer-uri: http://localhost:8080/realms/lv-426
+
+          # URI containing the public key so that our Resource Server can verify the tokens’ integrity.
+          jwk-set-uri: http://keycloak:8080/realms/lv-426/protocol/openid-connect/certs
+
+data:
+  preload:
+    samples: ${PRELOAD_SAMPLE_DATA:false}
+
+token:
+  converter:
+    principal-attribute: preferred_username
