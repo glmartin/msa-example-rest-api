@@ -55,7 +55,7 @@ public class AppUserController {
     EntityModel<AppUser> get(@PathVariable Long id) {
 
         AppUser appUser = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("/app_users/" + id));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("/app_users/%d", id)));
 
         // the assembler adds the links to the single entity resource
         return assembler.toModel(appUser);

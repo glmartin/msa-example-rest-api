@@ -90,7 +90,7 @@ public class OrganizationController {
                 .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
                 .body(Problem.create()
                         .withTitle("Method not allowed")
-                        .withDetail("You can't deactivate an organization that is in the " + organization.getStatus() + " status"));
+                        .withDetail(String.format("You can't deactivate an organization that is in the %s status", organization.getStatus())));
     }
 
     @PutMapping("/{id}/activate")
@@ -108,6 +108,6 @@ public class OrganizationController {
                 .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
                 .body(Problem.create()
                         .withTitle("Method not allowed")
-                        .withDetail("You can't activate an organization that is in the " + order.getStatus() + " status"));
+                        .withDetail(String.format("You can't activate an organization that is in the %s status", order.getStatus())));
     }
 }

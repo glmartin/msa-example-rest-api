@@ -36,7 +36,7 @@ public class LoadDatabase {
                 Organization o2 = orgRepository.save(new Organization("Amazon", Status.PENDING));
 
                 orgRepository.findAll().forEach(org -> {
-                    log.info("Preloaded " + org);
+                    log.info("Preloaded Org: {}", org);
                 });
 
                 appUserRepository.save(new AppUser("Clark", "Kent", "ckent@o1.org", o1));
@@ -47,7 +47,7 @@ public class LoadDatabase {
                 appUserRepository.save(new AppUser("General", "Zod", "gzod@o2.org", o2));
                 appUserRepository.save(new AppUser("Dooms", "Day", "dday@o2.org", o2));
 
-                appUserRepository.findAll().forEach(user -> log.info("Preloaded " + user));
+                appUserRepository.findAll().forEach(user -> log.info("Preloaded User: {}", user));
             } else {
                 log.info("Skipping Sample Data Preload");
             }

@@ -23,9 +23,9 @@ import static org.testcontainers.containers.PostgreSQLContainer.POSTGRESQL_PORT;
  * and run the migrations for testing the controller using HTTP requests.
  */
 public abstract class RestIntegrationTester {
-    private static String PSQL_IMAGE = "postgres:15-alpine";
-    private static String DB_MIG_IMAGE = "local/msa-example-db-mgmt:1.0.1";
-    private static String TEST_DB_NAME = "testdb";
+    private static final String PSQL_IMAGE = "postgres:15-alpine";
+    private static final String DB_MIG_IMAGE = "local/msa-example-db-mgmt:1.0.1";
+    private static final String TEST_DB_NAME = "testdb";
 
     // Network for the containers to communicate on
     private static final Network network = Network.newNetwork();

@@ -43,12 +43,6 @@ public class OrganizationTests extends RestIntegrationTester {
         o1 = orgRepository.save(new Organization("Google", Status.ACTIVE));
         o2 = orgRepository.save(new Organization("Amazon", Status.PENDING));
         o3 = orgRepository.save(new Organization("FourV", Status.INACTIVE));
-
-//        List<Organization> orgs = List.of(
-//                new Organization("Google", Status.ACTIVE),
-//                new Organization("Amazon", Status.PENDING)
-//        );
-//        orgRepository.saveAll(orgs);
     }
 
     @Test
@@ -68,7 +62,7 @@ public class OrganizationTests extends RestIntegrationTester {
                 .log().all()
                 .contentType(ContentType.JSON)
                 .when()
-                .get("/organizations/" + o1.getId())
+                .get(String.format("/organizations/%d", o1.getId()))
                 .then()
                 .statusCode(200)
                 .body("name", equalTo("Google"))
@@ -110,14 +104,14 @@ public class OrganizationTests extends RestIntegrationTester {
         given()
                 .log().all()
                 .when()
-                .delete("/organizations/" + o1.getId() + "/deactivate")
+                .delete(String.format("/organizations/%d/deactivate", o1.getId()))
                 .then()
                 .statusCode(200);
 
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .get("/organizations/" + o1.getId())
+                .get(String.format("/organizations/%d", o1.getId()))
                 .then()
                 .statusCode(200)
                 .body("status", equalTo("INACTIVE"));
@@ -128,7 +122,7 @@ public class OrganizationTests extends RestIntegrationTester {
         given()
                 .log().all()
                 .when()
-                .delete("/organizations/" + o3.getId() + "/deactivate")
+                .delete(String.format("/organizations/%d/deactivate", o3.getId() ))
                 .then()
                 .log().all()
                 .statusCode(HttpStatus.METHOD_NOT_ALLOWED.value())
@@ -142,14 +136,14 @@ public class OrganizationTests extends RestIntegrationTester {
         given()
                 .log().all()
                 .when()
-                .put("/organizations/" + o2.getId() + "/activate")
+                .put(String.format("/organizations/%d/activate", o2.getId()))
                 .then()
                 .statusCode(200);
 
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .get("/organizations/" + o2.getId())
+                .get(String.format("/organizations/%d", o2.getId()))
                 .then()
                 .statusCode(200)
                 .body("status", equalTo("ACTIVE"));
@@ -160,7 +154,7 @@ public class OrganizationTests extends RestIntegrationTester {
         given()
                 .log().all()
                 .when()
-                .put("/organizations/" + o1.getId() + "/activate")
+                .put(String.format("/organizations/%d/activate", o1.getId() ))
                 .then()
                 .log().all()
                 .statusCode(HttpStatus.METHOD_NOT_ALLOWED.value())
