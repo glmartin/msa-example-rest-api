@@ -7,11 +7,12 @@ import java.util.Collection;
 
 public interface OrganizationService {
     public abstract Organization createOrganization(Organization organization);
-    public abstract Organization updateOrganization(Long id, Organization organization);
+    public abstract Organization updateOrganization(Organization organization);
     public abstract void deleteOrganization(Long id);
     public abstract Collection<Organization> getOrganizations();
 
     Organization getOrganization(Long id);
+    Organization getOrganizationByName(String orgName);
 
     Collection<AppUser> getOrgUsers(Long orgId);
 }

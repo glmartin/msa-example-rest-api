@@ -82,7 +82,7 @@ public class OrganizationController {
 
         if (organization.getStatus() == Status.ACTIVE) {
             organization.setStatus(Status.INACTIVE);
-            return ResponseEntity.ok(assembler.toModel(orgService.updateOrganization(id, organization)));
+            return ResponseEntity.ok(assembler.toModel(orgService.updateOrganization(organization)));
         }
 
         return ResponseEntity
@@ -96,11 +96,11 @@ public class OrganizationController {
     @PutMapping("/{id}/activate")
     ResponseEntity<?> activate(@PathVariable Long id) {
 
-        Organization order = orgService.getOrganization(id);
+        Organization org = orgService.getOrganization(id);
 
-        if (order.getStatus() == Status.PENDING) {
-            order.setStatus(Status.ACTIVE);
-            return ResponseEntity.ok(assembler.toModel(orgService.updateOrganization(id, order)));
+        if (org.getStatus() == Status.PENDING) {
+            org.setStatus(Status.ACTIVE);
+            return ResponseEntity.ok(assembler.toModel(orgService.updateOrganization(org)));
         }
 
         return ResponseEntity
@@ -108,6 +108,6 @@ public class OrganizationController {
                 .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
                 .body(Problem.create()
                         .withTitle("Method not allowed")
-                        .withDetail(String.format("You can't activate an organization that is in the %s status", order.getStatus())));
+                        .withDetail(String.format("You can't activate an organization that is in the %s status", org.getStatus())));
     }
 }

@@ -6,6 +6,7 @@ import glmartin.java.restapi.entities.Status;
 import glmartin.java.restapi.exceptions.ResourceNotFoundException;
 import glmartin.java.restapi.repositories.AppUserRepository;
 import glmartin.java.restapi.repositories.OrganizationRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -28,8 +29,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public Organization updateOrganization(Long id, Organization organization) {
-        return orgRepository.findById(id)
+    public Organization updateOrganization(Organization organization) {
+        return orgRepository.findById(organization.getId())
                 .map(org -> {
                     org.setName(organization.getName());
                     org.setStatus(organization.getStatus());
@@ -39,7 +40,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
+    @Transactional
     public void deleteOrganization(Long id) {
+        appUserRepository.deleteByOrganizationId(id);
         orgRepository.deleteById(id);
     }
 
@@ -51,6 +54,12 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public Organization getOrganization(Long id) {
         return orgRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Organization Not Found"));
+    }
+
+    @Override
+    public Organization getOrganizationByName(String orgName) {
+        return orgRepository.findByName(orgName)
                 .orElseThrow(() -> new ResourceNotFoundException("Organization Not Found"));
     }
 
